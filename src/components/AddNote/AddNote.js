@@ -7,7 +7,7 @@ const AddNote = () => {
   const [newTodo, setNewTodo] = useState("");
   const textRef = useRef(null);
   const [show, setShow] = useState(false);
-  // const [updateData, setUpdateData] = useState('');
+  const [editId, setEditId] = useState(0);
   
 // Add to local Storage
   useEffect(() => {
@@ -17,6 +17,18 @@ const AddNote = () => {
 
 // create new todo
   const addNewTodo = () => {
+
+    if(editId){
+      const editTodo = todo.find((i)=> i.id === editId)
+      const updatedTodos= todo.map((t)=>t.id === editTodo.id?(
+      t={id:t.id,todo}):{id:t.id,todo: t.todo})
+      setTodo(updatedTodos);
+      setEditId(0)
+      setNewTodo('')
+      return;
+    }
+
+   
     if (newTodo) {
       let num = todo.length + 1;
       let newEntry = {
@@ -29,22 +41,18 @@ const AddNote = () => {
     }
     
   }
-     const handleChange = (todo) => {
-        textRef.current.value = todo;
-        // let newEntry = {
-        //   id: updateData.id,
-        //   title: e.target.value,
-        //   status: updateData.status ? true : false
-        // }
-        // setUpdateData(newEntry);
-      };
+    //  const handleChange = (todo) => {
+     
+      
+    //   };
 
-// const updateTask = () => {
-//     let filterRecords = [...todo].filter(task => task.id !== updateData.id)
-//     let updatedObject = [...filterRecords, updateData]
-//     setTodo(updatedObject);
-//     setUpdateData('')
-//   }
+      const handleEdit = (id) => {
+        
+        const editTodo = todo.find((i)=>i.id ===id)
+        setTodo(editTodo.newTodo);
+        setEditId(id)
+           textRef.current.value = id.title;
+      }
 
   return (
     <>
@@ -58,14 +66,13 @@ const AddNote = () => {
           todo.map((el, i) => 
              <button
               className="add-btn"
-              onClick={() => handleChange(el.title)}
-              key={i}
+              onClick={() =>handleEdit(el.id)}
+              key={el.id}
             >
               Запись {el.id}
-            </button>
-         
-           
-          )}
+            </button>   
+          ) }
+          
         <button
           className="note-btn"
           onClick={() => {
@@ -91,8 +98,8 @@ const AddNote = () => {
           </form>
       
           <button onClick={() => addNewTodo() } className="save-btn">
+            {editId? "izmenit" : "сохранить"}
             
-            сохранить
           </button>
         </div>
       )}
